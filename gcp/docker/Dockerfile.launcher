@@ -1,0 +1,38 @@
+ARG BASE_IMAGE=us-central1-docker.pkg.dev/tcpfastrak-staging/nemo-megatron-wfelix/nemo-local-build:init
+
+FROM ${BASE_IMAGE}
+
+# GCSfuse components
+# installation error using gcsfuse-focal
+# ref: https://github.com/GoogleCloudPlatform/gcsfuse/issues/1428
+RUN apt-get update && apt-get install --yes --no-install-recommends \
+    ca-certificates \
+    curl \
+    gnupg \
+  && echo "deb https://packages.cloud.google.com/apt gcsfuse-buster main" \
+    | tee /etc/apt/sources.list.d/gcsfuse.list \
+  && echo "deb https://packages.cloud.google.com/apt cloud-sdk main" \
+    | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
+  && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - \
+  && apt-get update \
+  && apt-get install --yes gcsfuse \
+  && apt-get install --yes google-cloud-cli \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+  && mkdir /gcs \
+  && mkdir /gcsro
+
+# Miscellaneous tools used in scripts
+RUN pip3 install --upgrade requests yq austin-dist austin-tui python-etcd google-cloud-monitoring
+RUN apt-get update && apt-get install -y net-tools gawk bc jq sysstat irqbalance
+
+# Get vocab and merges files
+WORKDIR /workspace
+RUN wget https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-vocab.json &&\
+  wget https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-merges.txt
+
+COPY dev_main.sh /workspace/
+COPY dev_training.sh /workspace/
+COPY training_configs /workspace/training_configs
+
+ENTRYPOINT ["/bin/bash", "/workspace/dev_main.sh"]
+

@@ -629,6 +629,13 @@ following code:
 DOCKER_BUILDKIT=1 docker build -f Dockerfile -t nemo:latest
 ```
 
+To build a nemo container with Dockerfile.ci from a branch for GCP usage,
+run the following code
+
+```bash
+DOCKER_BUILDKIT=1 docker build --build-arg NEMO_TAG=c80bd5c0c677c47f6ae495444431b15db42c0422 --build-arg NEMO_REPO=https://github.com/felixwqp/NeMo.git --build-arg IMAGE_LABEL=init-0313 --build-arg MLM_REPO=https://github.com/felixwqp/Megatron-LM.git --build-arg MLM_TAG=ac3884aab91668eccd952916f8ffff9d272a09be -f Dockerfile.ci -t us-central1-docker.pkg.dev/tcpfastrak-staging/nemo-megatron-wfelix/nemo-local-build:init .
+```
+
 If you choose to work with the main branch, we recommend using NVIDIA\'s
 PyTorch container version 23.10-py3 and then installing from GitHub.
 
