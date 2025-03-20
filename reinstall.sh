@@ -48,11 +48,10 @@ mcore() {
     popd
 
   MLM_DIR="$INSTALL_DIR/Megatron-LM" &&
-    if [ ! -d "$MLM_DIR/.git" ]; then
       rm -rf "$MLM_DIR" &&
         cd $(dirname "$MLM_DIR") &&
         git clone ${MLM_REPO}
-    fi &&
+    &&
     pushd $MLM_DIR &&
     git checkout -f $MLM_TAG &&
     sed -i "/triton==3.1.0/d" requirements/pytorch_24.10/requirements.txt &&
@@ -63,7 +62,8 @@ mcore() {
     pip wheel --no-deps --wheel-dir $WHEELS_DIR/mcore/ $CAUSAL_CONV1D_DIR
     pip wheel --no-deps --wheel-dir $WHEELS_DIR/mcore/ $MLM_DIR
   else
-    pip install --no-cache-dir $WHEELS_DIR/mcore/*.whl "nvidia-pytriton ; platform_machine == 'x86_64'"
+    ls -lt $DOCKER_BUILDKIT/mcore/*.whl 
+    pip install --no-cache-dir $DOCKER_BUILDKIT/mcore/*.whl "nvidia-pytriton ; platform_machine == 'x86_64'"
     pip install --no-cache-dir -e $MLM_DIR
   fi
 }

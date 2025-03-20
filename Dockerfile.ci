@@ -21,9 +21,10 @@ ARG NEMO_TAG
 WORKDIR /opt
 # NeMo
 RUN <<"EOF" bash -exu
-if [[ ! -d NeMo ]]; then
-    git clone https://github.com/NVIDIA/NeMo.git
+if [[ -d NeMo ]]; then
+   rm -rf NeMo    
 fi
+git clone https://github.com/felixwqp/NeMo.git
 cd NeMo/
 git fetch origin '+refs/pull/*/merge:refs/remotes/pull/*/merge'
 git fetch origin $NEMO_TAG
