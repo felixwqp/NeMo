@@ -48,10 +48,9 @@ mcore() {
     popd
 
   MLM_DIR="$INSTALL_DIR/Megatron-LM" &&
-      rm -rf "$MLM_DIR" &&
+      rm -rf "$MLM_DIR" || true &&
         cd $(dirname "$MLM_DIR") &&
         git clone ${MLM_REPO}
-    &&
     pushd $MLM_DIR &&
     git checkout -f $MLM_TAG &&
     sed -i "/triton==3.1.0/d" requirements/pytorch_24.10/requirements.txt &&
