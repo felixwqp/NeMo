@@ -15,7 +15,8 @@ main() {
 
   trap on_script_completion EXIT
 
-  set_nemo_specific_configuration
+  # TODO: evaluate.
+  # set_nemo_specific_configuration
   share_config
 
   # if [[ "${USE_GCS_BUCKET:-yes}" == "yes" ]]; then
@@ -28,7 +29,7 @@ main() {
   # TODO: enable the NCCL setup.
   # Both are replaced by dist_run_entry.sh
   # set_nccl_specific_configuratio
-  #  set_torch_specific_configuration
+  # set_torch_specific_configuration
   # set_torch_distributed_profiling_configuration
   # TODO: skip the profiling command.
   # set_nsight_profiling_configuration

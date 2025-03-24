@@ -24,14 +24,30 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
 # Miscellaneous tools used in scripts
 RUN pip3 install --upgrade requests yq austin-dist austin-tui python-etcd google-cloud-monitoring
 RUN apt-get update && apt-get install -y net-tools gawk bc jq sysstat irqbalance
+RUN pip install nvitop
+RUN pip install dllogger@git+https://github.com/NVIDIA/dllogger@v1.0.0
+
 
 # Get vocab and merges files
 WORKDIR /workspace
 RUN wget https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-vocab.json &&\
   wget https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-merges.txt
 
+# TODO: remove after the changes are merged into the base image.
+# Change the Megatron-LM code for rank accessing
+RUN sed -i '520s/torch.distributed.get_rank()/int(os.getenv("LOCAL_RANK", "0"))/g' /opt/Megatron-LM/megatron/core/datasets/blended_megatron_dataset_builder.py
+RUN sed -i '391s/torch.distributed.get_rank()/int(os.getenv("LOCAL_RANK", "0"))/g' /opt/Megatron-LM/megatron/core/datasets/blended_megatron_dataset_builder.py
+RUN sed -i 's/torch.distributed.get_rank()/int(os.getenv("LOCAL_RANK", "0"))/g' /opt/Megatron-LM/megatron/core/datasets/gpt_dataset.py
+RUN sed -i '6aimport os' /opt/Megatron-LM/megatron/core/datasets/blended_megatron_dataset_builder.py
+
+RUN cp /opt/Megatron-LM/megatron/core/datasets/blended_megatron_dataset_builder.py /workspace/Megatron-LM/megatron/core/datasets/blended_megatron_dataset_builder.py
+RUN cp /opt/Megatron-LM/megatron/core/datasets/gpt_dataset.py /workspace/Megatron-LM/megatron/core/datasets/gpt_dataset.py
+
+
 COPY dev_main.sh /workspace/
 COPY dev_training.sh /workspace/
+COPY dist_run_entry.sh /workspace
+COPY run_llama.sh /workspace
 COPY training_configs /workspace/training_configs
 
 ENTRYPOINT ["/bin/bash", "/workspace/dev_main.sh"]

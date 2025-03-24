@@ -53,7 +53,6 @@ exp_manager:
     model_parallel_size: ${multiply:${model.tensor_model_parallel_size}, ${model.pipeline_model_parallel_size}}
 
 model:
-  name: 'vmg_megatron_llama3_7b'
   mcore_gpt: true
   # specify micro_batch_size, global_batch_size, and model parallelism
   # gradient accumulation will be done automatically based on data_parallel_size
@@ -67,6 +66,17 @@ model:
   # Makes tensor parallelism more memory efficient for LLMs (20B+) by parallelizing layer norms and dropout sequentially
   # See Reducing Activation Recomputation in Large Transformer Models: https://arxiv.org/abs/2205.05198 for more details.
   sequence_parallel: true
+
+  # Distributed checkpoint setup
+  dist_ckpt_format: 'torch_dist'
+  dist_ckpt_load_on_device: True
+  dist_ckpt_parallel_save: True
+  dist_ckpt_parallel_save_within_dp: False
+  dist_ckpt_parallel_load: True
+  dist_ckpt_torch_dist_multiproc: 2
+  dist_ckpt_assume_constant_structure: False
+  dist_ckpt_parallel_dist_opt: True
+  dist_ckpt_load_strictness: null
 
   fsdp: false
   fsdp_cpu_offload: true

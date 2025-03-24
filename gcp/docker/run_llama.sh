@@ -35,6 +35,9 @@ sync_gcs_data() {
   fi
 }
 
+# Cleanup all existing torchrun process to avoid OOM.
+kill -9 $(ps aux | grep torchrun | grep python | awk '{print $2}')
+
 sync_gcs_data
 
 /workspace/dist_run_entry.sh /opt/NeMo/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
