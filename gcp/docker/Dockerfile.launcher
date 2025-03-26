@@ -33,16 +33,6 @@ WORKDIR /workspace
 RUN wget https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-vocab.json &&\
   wget https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-merges.txt
 
-# TODO: remove after the changes are merged into the base image.
-# Change the Megatron-LM code for rank accessing
-RUN sed -i '520s/torch.distributed.get_rank()/int(os.getenv("LOCAL_RANK", "0"))/g' /opt/Megatron-LM/megatron/core/datasets/blended_megatron_dataset_builder.py
-RUN sed -i '391s/torch.distributed.get_rank()/int(os.getenv("LOCAL_RANK", "0"))/g' /opt/Megatron-LM/megatron/core/datasets/blended_megatron_dataset_builder.py
-RUN sed -i 's/torch.distributed.get_rank()/int(os.getenv("LOCAL_RANK", "0"))/g' /opt/Megatron-LM/megatron/core/datasets/gpt_dataset.py
-RUN sed -i '6aimport os' /opt/Megatron-LM/megatron/core/datasets/blended_megatron_dataset_builder.py
-
-RUN cp /opt/Megatron-LM/megatron/core/datasets/blended_megatron_dataset_builder.py /workspace/Megatron-LM/megatron/core/datasets/blended_megatron_dataset_builder.py
-RUN cp /opt/Megatron-LM/megatron/core/datasets/gpt_dataset.py /workspace/Megatron-LM/megatron/core/datasets/gpt_dataset.py
-
 
 COPY dev_main.sh /workspace/
 COPY dev_training.sh /workspace/

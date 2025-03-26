@@ -3,7 +3,7 @@ set -x
 
 # --- Configuration ---
 SCRIPT_DIR="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
-DOCKER_TAG=init-0320
+DOCKER_TAG=init-0326-permission-fix
 
 # --- Docker Image Options ---
 IMAGE_TO_BUILD="both"  # Default: both, nemo, launcher
@@ -46,7 +46,7 @@ if [[ "$IMAGE_TO_BUILD" == "both" || "$IMAGE_TO_BUILD" == "nemo" ]]; then
     --build-arg NEMO_REPO=https://github.com/felixwqp/NeMo.git  \
     --build-arg IMAGE_LABEL=$DOCKER_TAG \
     --build-arg MLM_REPO=https://github.com/felixwqp/Megatron-LM.git \
-    --build-arg MLM_TAG=0a14427596a4d9d9422a525a7deb70b8d9a82c64 \
+    --build-arg MLM_TAG=0a0eeb539d1c262dfb16b8add7706c49ddeaaebe \
     -f $NEMO_DOCKER_FILE \
     -t $NEMO_DOCKER_PATH .  
 
